@@ -71,27 +71,27 @@ def download_chapter(first_page,prefix,manga_path,chapter_number):
     return next_chap_url
 
 
-def get_first_chapter(manga_url):
+def get_nth_chapter(n,manga_url):
     html = urlopen(manga_url+"/completa")
     soup = BeautifulSoup(html,"lxml")
     manga = soup.find("table","caps")
     for a in manga.findAll("a"):
         strong = a.find("strong")
-        if strong and str(strong) =="<strong>1</strong>":
+        if strong and str(strong) =="<strong>"+str(n)+"</strong>":
             chapter_link = a["href"]
             return chapter_link
 
         
 def download_manga(manga_url,manga_name):
     manga_path = make_manga_directory(manga_name)
-    first_chap_url = get_first_chapter(manga_url)
+    first_chap_url = get_nth_chapter(1,manga_url)
     first_page = get_chapter_first_page(first_chap_url)
     next_page_url = first_page
     current_chapter = 1
     while next_page_url != manga_url:
         next_page_url = download_chapter(next_page_url,manga_name,manga_path,current_chapter)
         current_chapter +=1
-        
+    
 def make_top_directory():
     home = os.getenv("HOME")
     submanga = home + "/submanga"
